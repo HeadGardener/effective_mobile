@@ -2,10 +2,15 @@ package services
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/HeadGardener/effective_mobile/internal/models"
 	"github.com/google/uuid"
+)
+
+var (
+	ErrPersonNotExist = errors.New("person with such id doesn't exists")
 )
 
 type PersonStorage interface {
@@ -59,22 +64,23 @@ func (s *PersonService) Create(ctx context.Context, person *models.Person) (stri
 	return s.personStorage.Save(ctx, person)
 }
 
-func (s *PersonService) Get(ctx context.Context, filters map[string]any, id, createdAt string, limit int) ([]models.Person, error) {
+func (s *PersonService) Get(ctx context.Context,
+	filters map[string]any, id, createdAt string, limit int) ([]models.Person, error) {
 	return s.personStorage.Get(ctx, filters, id, createdAt, limit)
-}
-
-func (s *PersonService) Delete(ctx context.Context, id string) error {
-	if _, err := s.personStorage.GetByID(ctx, id); err != nil {
-		return err
-	}
-
-	return s.personStorage.Delete(ctx, id)
 }
 
 func (s *PersonService) Update(ctx context.Context, id string, fields map[string]any) error {
 	if _, err := s.personStorage.GetByID(ctx, id); err != nil {
-		return err
+		return ErrPersonNotExist
 	}
 
 	return s.personStorage.Update(ctx, id, fields)
+}
+
+func (s *PersonService) Delete(ctx context.Context, id string) error {
+	if _, err := s.personStorage.GetByID(ctx, id); err != nil {
+		return ErrPersonNotExist
+	}
+
+	return s.personStorage.Delete(ctx, id)
 }
