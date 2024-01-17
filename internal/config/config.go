@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -18,7 +20,9 @@ type DBConfig struct {
 }
 
 type ServerConfig struct {
-	Port string
+	Port         string
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
 }
 
 func Init(path string) (*Config, error) {
@@ -37,12 +41,24 @@ func Init(path string) (*Config, error) {
 		return nil, errors.New("server port is empty")
 	}
 
+	readTimeout, err := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
+	if err != nil {
+		return nil, errors.Join(errors.New("invalid read timeout"), err)
+	}
+
+	writeTimeout, err := strconv.Atoi(os.Getenv("SERVER_WRITE_TIMEOUT"))
+	if err != nil {
+		return nil, errors.Join(errors.New("invalid write timeout"), err)
+	}
+
 	return &Config{
 		DBConfig: DBConfig{
 			URL: dburl,
 		},
 		ServerConfig: ServerConfig{
-			Port: srvport,
+			Port:         srvport,
+			ReadTimeout:  time.Duration(readTimeout),
+			WriteTimeout: time.Duration(writeTimeout),
 		},
 	}, nil
 }

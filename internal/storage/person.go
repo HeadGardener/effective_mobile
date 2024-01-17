@@ -87,14 +87,6 @@ func (s *PersonStorage) Get(ctx context.Context,
 	return persons, nil
 }
 
-func (s *PersonStorage) Delete(ctx context.Context, id string) error {
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM persons WHERE id=$1`, id); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (s *PersonStorage) Update(ctx context.Context, id string, fields map[string]any) error {
 	setValues := make([]string, 0)
 	args := make([]any, 0)
@@ -110,6 +102,14 @@ func (s *PersonStorage) Update(ctx context.Context, id string, fields map[string
 	args = append(args, id)
 
 	if _, err := s.db.ExecContext(ctx, query, args...); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *PersonStorage) Delete(ctx context.Context, id string) error {
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM persons WHERE id=$1`, id); err != nil {
 		return err
 	}
 
