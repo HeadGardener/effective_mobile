@@ -64,7 +64,7 @@ func (s *PersonStorage) Get(ctx context.Context,
 	}
 
 	if pagPart != "" {
-		query.WriteString(fmt.Sprintf("%s", pagPart))
+		query.WriteString(pagPart)
 	}
 
 	if pagPart != "" && len(getValues) != 0 {
@@ -72,7 +72,7 @@ func (s *PersonStorage) Get(ctx context.Context,
 	}
 
 	if len(getValues) != 0 {
-		query.WriteString(fmt.Sprintf("%s", strings.Join(getValues, ", ")))
+		query.WriteString(strings.Join(getValues, ", "))
 	}
 
 	query.WriteString(fmt.Sprintf(" ORDER BY created_at DESC, id DESC LIMIT $%d", argID))
