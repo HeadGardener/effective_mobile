@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/HeadGardener/effective_mobile/internal/services"
@@ -15,6 +16,8 @@ type response struct {
 }
 
 func newErrResponse(w http.ResponseWriter, code int, msg string, err error) {
+	log.Printf("[ERROR] %s: %s", msg, err.Error())
+
 	if !errIsCustom(err) && code >= http.StatusInternalServerError {
 		newResponse(w, code, response{
 			Msg:   msg,

@@ -11,8 +11,9 @@ import (
 )
 
 type Config struct {
-	DBConfig     DBConfig
-	ServerConfig ServerConfig
+	DBConfig         DBConfig
+	ServerConfig     ServerConfig
+	HTTPClientConfig HTTPClientConfig
 }
 
 type DBConfig struct {
@@ -23,6 +24,12 @@ type ServerConfig struct {
 	Port         string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+}
+
+type HTTPClientConfig struct {
+	AgeBaseURL         string
+	GenderBaseURL      string
+	NationalityBaseURL string
 }
 
 func Init(path string) (*Config, error) {
@@ -43,12 +50,27 @@ func Init(path string) (*Config, error) {
 
 	readTimeout, err := strconv.Atoi(os.Getenv("SERVER_READ_TIMEOUT"))
 	if err != nil {
-		return nil, errors.Join(errors.New("invalid read timeout"), err)
+		return nil, fmt.Errorf("invalid read timeout: %w", err)
 	}
 
 	writeTimeout, err := strconv.Atoi(os.Getenv("SERVER_WRITE_TIMEOUT"))
 	if err != nil {
-		return nil, errors.Join(errors.New("invalid write timeout"), err)
+		return nil, fmt.Errorf("invalid write timeout: %w", err)
+	}
+
+	ageURL := os.Getenv("AGE_BASE_URL")
+	if ageURL == "" {
+		return nil, errors.New("age api URL is empty")
+	}
+
+	genderURL := os.Getenv("GENDER_BASE_URL")
+	if genderURL == "" {
+		return nil, errors.New("gender api URL is empty")
+	}
+
+	nationalityURL := os.Getenv("NATIONALITY_BASE_URL")
+	if nationalityURL == "" {
+		return nil, errors.New("nationality api URL is empty")
 	}
 
 	return &Config{
@@ -59,6 +81,11 @@ func Init(path string) (*Config, error) {
 			Port:         srvport,
 			ReadTimeout:  time.Duration(readTimeout),
 			WriteTimeout: time.Duration(writeTimeout),
+		},
+		HTTPClientConfig: HTTPClientConfig{
+			AgeBaseURL:         ageURL,
+			GenderBaseURL:      genderURL,
+			NationalityBaseURL: nationalityURL,
 		},
 	}, nil
 }
