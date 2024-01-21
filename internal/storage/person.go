@@ -20,7 +20,15 @@ func NewPersonStorage(db *sqlx.DB) *PersonStorage {
 func (s *PersonStorage) Save(ctx context.Context, person *models.Person) (string, error) {
 	if _, err := s.db.ExecContext(ctx, `INSERT INTO persons
     										(id, name, surname, patronymic, age, gender, nationality, created_at)
-											VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`); err != nil {
+											VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+		person.ID,
+		person.Name,
+		person.Surname,
+		person.Patronymic,
+		person.Age,
+		person.Gender,
+		person.Nationality,
+		person.CreatedAt); err != nil {
 		return "", err
 	}
 
@@ -59,7 +67,7 @@ func (s *PersonStorage) Get(ctx context.Context,
 	var query = strings.Builder{}
 	query.WriteString("SELECT * FROM persons ")
 
-	if pagPart != "" && len(getValues) != 0 {
+	if pagPart != "" || len(getValues) != 0 {
 		query.WriteString("WHERE ")
 	}
 
@@ -77,6 +85,8 @@ func (s *PersonStorage) Get(ctx context.Context,
 
 	query.WriteString(fmt.Sprintf(" ORDER BY created_at DESC, id DESC LIMIT $%d", argID))
 	args = append(args, limit)
+
+	fmt.Println(query.String())
 
 	var persons []models.Person
 

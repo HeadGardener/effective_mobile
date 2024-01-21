@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -151,12 +152,16 @@ func (req *createPersonReq) validate() error {
 }
 
 func validatePersonIDAndCreatedAtQuery(id, createdAt string) error {
-	if _, err := uuid.Parse(id); err != nil {
-		return errors.Join(errors.New("invalid id query"), err)
+	if id != "" {
+		if _, err := uuid.Parse(id); err != nil {
+			return fmt.Errorf("invalid id query: %w", err)
+		}
 	}
 
-	if _, err := time.Parse("2006-01-02 03:04:05", createdAt); err != nil {
-		return errors.Join(errors.New("invalid created_at query"), err)
+	if createdAt != "" {
+		if _, err := time.Parse("2006-01-02 15:04:05.000000", createdAt); err != nil {
+			return fmt.Errorf("invalid created_at query: %w", err)
+		}
 	}
 
 	return nil
