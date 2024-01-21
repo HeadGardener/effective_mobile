@@ -10,6 +10,10 @@ import (
 	"github.com/HeadGardener/effective_mobile/internal/config"
 )
 
+const (
+	nameQueryParam = "?name="
+)
+
 type Client struct {
 	cl                 *http.Client
 	ageBaseURL         string
@@ -27,7 +31,7 @@ func NewClient(conf config.HTTPClientConfig) *Client {
 }
 
 func (c *Client) GetAge(ctx context.Context, name string) (int8, error) {
-	resp, err := c.sendGetRequest(ctx, c.ageBaseURL+"?name="+name)
+	resp, err := c.sendGetRequest(ctx, c.ageBaseURL+nameQueryParam+name)
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -49,7 +53,7 @@ func (c *Client) GetAge(ctx context.Context, name string) (int8, error) {
 }
 
 func (c *Client) GetGender(ctx context.Context, name string) (string, error) {
-	resp, err := c.sendGetRequest(ctx, c.genderBaseURL+"?name="+name)
+	resp, err := c.sendGetRequest(ctx, c.genderBaseURL+nameQueryParam+name)
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -71,7 +75,7 @@ func (c *Client) GetGender(ctx context.Context, name string) (string, error) {
 }
 
 func (c *Client) GetNationality(ctx context.Context, name string) (string, error) {
-	resp, err := c.sendGetRequest(ctx, c.nationalityBaseURL+"?name="+name)
+	resp, err := c.sendGetRequest(ctx, c.nationalityBaseURL+nameQueryParam+name)
 	if resp != nil {
 		defer resp.Body.Close()
 	}
