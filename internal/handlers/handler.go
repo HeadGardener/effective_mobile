@@ -58,6 +58,7 @@ func (h *Handler) InitRoutes() http.Handler {
 	r.Use(middleware.Timeout(minute))
 
 	r.Route("/api", func(r chi.Router) {
+		r.Use(h.logRequest)
 		r.Post("/", h.createPerson)
 		r.Get("/", h.getPersons)
 		r.Put("/{person_id}", h.updatePerson)

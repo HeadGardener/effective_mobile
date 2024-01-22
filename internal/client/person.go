@@ -100,6 +100,10 @@ func (c *Client) GetNationality(ctx context.Context, name string) (string, error
 		return "", err
 	}
 
+	if len(nationality.Country) == 0 {
+		return "NONE", nil
+	}
+
 	return nationality.Country[0].CountryID, nil
 }
 
