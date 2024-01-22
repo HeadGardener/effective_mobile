@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  go-app:
+    container_name: effective_mobile
+    image: headgardener1/effective_mobile:latest
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres_db
+    links:
+      - postgres_db
+  postgres_db:
+    container_name: effective_mobile_postgres_db
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: 3418abcd
+      POSTGRES_USER: yan
+      POSTGRES_DB: effective_mobile
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}
