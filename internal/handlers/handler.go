@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/HeadGardener/effective_mobile/internal/models"
@@ -34,11 +36,16 @@ type PersonService interface {
 }
 
 type Handler struct {
+	log *slog.Logger
+
 	personService PersonService
 }
 
 func NewHandler(personService PersonService) *Handler {
-	return &Handler{personService: personService}
+	return &Handler{
+		log:           slog.New(slog.NewJSONHandler(os.Stdout, nil)),
+		personService: personService,
+	}
 }
 
 func (h *Handler) InitRoutes() http.Handler {

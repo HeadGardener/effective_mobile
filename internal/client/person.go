@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/HeadGardener/effective_mobile/internal/config"
 )
@@ -15,6 +17,7 @@ const (
 )
 
 type Client struct {
+	debugLogger        *slog.Logger
 	cl                 *http.Client
 	ageBaseURL         string
 	genderBaseURL      string
@@ -23,6 +26,7 @@ type Client struct {
 
 func NewClient(conf config.HTTPClientConfig) *Client {
 	return &Client{
+		debugLogger:        slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})),
 		cl:                 http.DefaultClient,
 		ageBaseURL:         conf.AgeBaseURL,
 		genderBaseURL:      conf.GenderBaseURL,
@@ -112,6 +116,8 @@ func (c *Client) sendGetRequest(ctx context.Context, url string) (*http.Response
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
+
+	c.debugLogger.Debug("sent GET request", "url", url, "status", resp.StatusCode)
 
 	return resp, nil
 }

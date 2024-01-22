@@ -89,7 +89,7 @@ linters:
     - nolintlint
     - revive
     - staticcheck
-    - typecheck
+    # - typecheck   off because of checking standard lib
     - unconvert
     - unparam
     - unused

@@ -39,12 +39,12 @@ func (h *Handler) createPerson(w http.ResponseWriter, r *http.Request) {
 	var req createPersonReq
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		newErrResponse(w, http.StatusBadRequest, "failed while decoding create person req", err)
+		h.newErrResponse(w, http.StatusBadRequest, "failed while decoding create person req", err)
 		return
 	}
 
 	if err := req.validate(); err != nil {
-		newErrResponse(w, http.StatusBadRequest, "failed while validating create person req", err)
+		h.newErrResponse(w, http.StatusBadRequest, "failed while validating create person req", err)
 		return
 	}
 
@@ -56,11 +56,11 @@ func (h *Handler) createPerson(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.personService.Create(r.Context(), person)
 	if err != nil {
-		newErrResponse(w, http.StatusInternalServerError, "failed while creating person", err)
+		h.newErrResponse(w, http.StatusInternalServerError, "failed while creating person", err)
 		return
 	}
 
-	newResponse(w, http.StatusCreated, map[string]any{
+	h.newResponse(w, http.StatusCreated, map[string]any{
 		"id": id,
 	})
 }
@@ -70,29 +70,29 @@ func (h *Handler) getPersons(w http.ResponseWriter, r *http.Request) {
 	createdAt := r.URL.Query().Get(createdAtQuery)
 
 	if err := validatePersonIDAndCreatedAtQuery(id, createdAt); err != nil {
-		newErrResponse(w, http.StatusBadRequest, "failed while validation query", err)
+		h.newErrResponse(w, http.StatusBadRequest, "failed while validation query", err)
 		return
 	}
 
 	limit, err := strconv.Atoi(r.URL.Query().Get(limitQuery))
 	if err != nil {
-		newErrResponse(w, http.StatusBadRequest, "invalid limit value", err)
+		h.newErrResponse(w, http.StatusBadRequest, "invalid limit value", err)
 		return
 	}
 
 	filters, err := queryToMap(r.URL.Query())
 	if err != nil {
-		newErrResponse(w, http.StatusBadRequest, "invalid query params", err)
+		h.newErrResponse(w, http.StatusBadRequest, "invalid query params", err)
 		return
 	}
 
 	persons, err := h.personService.Get(r.Context(), filters, id, createdAt, limit)
 	if err != nil {
-		newErrResponse(w, http.StatusInternalServerError, "failed while getting persons", err)
+		h.newErrResponse(w, http.StatusInternalServerError, "failed while getting persons", err)
 		return
 	}
 
-	newResponse(w, http.StatusOK, persons)
+	h.newResponse(w, http.StatusOK, persons)
 }
 
 func (h *Handler) updatePerson(w http.ResponseWriter, r *http.Request) {
@@ -101,23 +101,23 @@ func (h *Handler) updatePerson(w http.ResponseWriter, r *http.Request) {
 	var req updatePersonRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		newErrResponse(w, http.StatusBadRequest, "failed while decoding update person req", err)
+		h.newErrResponse(w, http.StatusBadRequest, "failed while decoding update person req", err)
 		return
 	}
 
 	if err := req.validate(); err != nil {
-		newErrResponse(w, http.StatusBadRequest, "failed while validating update person req", err)
+		h.newErrResponse(w, http.StatusBadRequest, "failed while validating update person req", err)
 		return
 	}
 
 	fields := req.toMap()
 
 	if err := h.personService.Update(r.Context(), id, fields); err != nil {
-		newErrResponse(w, http.StatusInternalServerError, "failed while updating person", err)
+		h.newErrResponse(w, http.StatusInternalServerError, "failed while updating person", err)
 		return
 	}
 
-	newResponse(w, http.StatusOK, map[string]any{
+	h.newResponse(w, http.StatusOK, map[string]any{
 		"status": "updated",
 	})
 }
@@ -126,11 +126,11 @@ func (h *Handler) deletePerson(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, personIDParam)
 
 	if err := h.personService.Delete(r.Context(), id); err != nil {
-		newErrResponse(w, http.StatusInternalServerError, "failed while deleting person", err)
+		h.newErrResponse(w, http.StatusInternalServerError, "failed while deleting person", err)
 		return
 	}
 
-	newResponse(w, http.StatusOK, map[string]any{
+	h.newResponse(w, http.StatusOK, map[string]any{
 		"status": "deleted",
 	})
 }

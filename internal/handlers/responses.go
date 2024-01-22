@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/HeadGardener/effective_mobile/internal/services"
@@ -15,24 +14,25 @@ type response struct {
 	Error string `json:"Error"`
 }
 
-func newErrResponse(w http.ResponseWriter, code int, msg string, err error) {
-	log.Printf("[ERROR] %s: %s", msg, err.Error())
+func (h *Handler) newErrResponse(w http.ResponseWriter, code int, msg string, err error) {
+	h.log.Error(msg, "error", err.Error())
 
 	if !errIsCustom(err) && code >= http.StatusInternalServerError {
-		newResponse(w, code, response{
+		h.newResponse(w, code, response{
 			Msg:   msg,
 			Error: "unexpected error",
 		})
 		return
 	}
 
-	newResponse(w, code, response{
+	h.newResponse(w, code, response{
 		Msg:   msg,
 		Error: err.Error(),
 	})
 }
 
-func newResponse(w http.ResponseWriter, code int, data any) {
+func (h *Handler) newResponse(w http.ResponseWriter, code int, data any) {
+	h.log.Info("sending response", "status", code, "data", data)
 	w.WriteHeader(code)
 	_ = json.NewEncoder(w).Encode(data)
 }
