@@ -1,9 +1,9 @@
 # Test task for Effective mobile
 
-This service is used to store person's info which is enriched with `age`, `gender` and `nationality` info by sending requsts to third-party api's.
-Implement all requsted rest methods: create, get with filters, update and delete person.
-Pagination implemented using (`person_id`, `created_at`)-way. Get persons request accept filters from Query params. All the params are similar as in `Person` struct and also `created_at`, `limit`. `limit` param is obligatory, other ones are not.
-Updating person implemented using pointers in request struct to check it for nil.
+This service is used to store person's info which is enriched with `age`, `gender` and `nationality` info by sending requsts to third-party api's.  
+Implement all requsted rest methods: create, get with filters, update and delete person.  
+Pagination implemented using (`person_id`, `created_at`)-way. Get persons request accept filters from Query params. All the params are similar as in `Person` struct and also `created_at`, `limit`. `limit` param is obligatory, other ones are not.  
+Updating person implemented using pointers in request struct to check it for nil.  
 The main technologies are:  
 - `chi-router` for routing;
 - `pgx` for postgres driver;
